@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Clickable from './Clickable.js';
 
 class Game extends React.Component {
@@ -7,13 +8,40 @@ class Game extends React.Component {
 
     this.state = {
       score: 0,
+      timer: 0,
     }
   }
 
+  componentDidMount() {
+    this.timerID = setInterval(() => this.tick(), 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
   reset() {
+    this.resetScore();
+    this.resetTimer();
+  }
+
+  resetScore() {
     this.setState({
       score: 0,
     })
+  }
+
+  resetTimer() {
+    this.setState({
+      timer: 0,
+    })
+  }
+
+  tick() {
+    const elapsed_seconds = this.state.timer + 1;
+    this.setState({
+      timer: elapsed_seconds,
+    });
   }
 
   updateScore() {
@@ -27,8 +55,9 @@ class Game extends React.Component {
     return (
       <div>
         <div>
-          <Score score={this.state.score} />
-          <Reset onClick={() => this.reset()} />
+          <Label title="Score" value={this.state.score} />
+          <Label title="Timer" value={this.state.timer} />
+          <SimpleButton title="Reset" onClick={() => this.reset()} />
         </div>
         <Clickable onClick={() => this.updateScore()} />
       </div>
@@ -36,23 +65,20 @@ class Game extends React.Component {
   }
 }
 
-function Score(props) {
+function Label(props) {
   return (
     <p>
-      Score: {props.score}
+      {props.title}: {props.value}
     </p>
   );
 }
 
-function Reset(props) {
+function SimpleButton(props) {
   return (
     <button onClick={props.onClick}>
-      Reset
+      {props.title}
     </button>
   );
-}
-
-function Timer(props) {
 }
 
 export default Game;
